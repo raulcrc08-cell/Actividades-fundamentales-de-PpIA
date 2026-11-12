@@ -1,0 +1,245 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOMl6M7KLOGcQIKZtp/0dYS",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/raulcrc08-cell/Actividades-fundamentales-de-PpIA/blob/main/AF1_Fundamentos_de_Python\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "César Santiago Esparza Guzmán 22184325\n",
+        "\n",
+        "Rodríguez Chaires Raúl Cristóbal 2201389\n",
+        "\n",
+        "Jorge Daniel García Ortiz 2189190\n",
+        "\n",
+        "Nicolás García Pinto 2188223\n",
+        "\n",
+        "David Lazos Ramírez 2276044\n",
+        "\n",
+        "Jesús Rodrigo Alemán Marines 2153639\n"
+      ],
+      "metadata": {
+        "id": "FttNQrYJZbgB"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "\n",
+        "Ejercicio 1: Evaluador rendimiento de modelos\n",
+        "\n",
+        "Primero valida que el número sea correcto (entre 0 y 1). Luego, con condiciones (if-elif-else), revisa el puntaje de arriba a abajo: si es mayor a 0.90 es \"excelente\", y va bajando por categorías hasta llegar a \"crítico\". Sirve para automatizar decisiones rápidas sobre si un modelo sirve o necesita mejoras."
+      ],
+      "metadata": {
+        "id": "-78y5XghHfm4"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 105
+        },
+        "id": "L1wKAenc7VU7",
+        "outputId": "ba9ea721-5a22-47bb-8f51-50f701d1c2f6"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Ingresa la exactitud del modelo (un número entre 0.0 y 1.0): 1\n",
+            "\n",
+            "Exactitud registrada: 1.0\n",
+            "Categoría del modelo: Excelente\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "'Excelente'"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "string"
+            }
+          },
+          "metadata": {},
+          "execution_count": 1
+        }
+      ],
+      "source": [
+        "def evaluar_modelo():\n",
+        "    try:\n",
+        "        entrada = input(\"Ingresa la exactitud del modelo (un número entre 0.0 y 1.0): \")\n",
+        "        exactitud = float(entrada)\n",
+        "\n",
+        "        if exactitud < 0.0 or exactitud > 1.0:\n",
+        "            print(\"Error: El valor ingresado debe estar estrictamente entre 0.0 y 1.0.\")\n",
+        "            return\n",
+        "\n",
+        "        if exactitud >= 0.90:\n",
+        "            categoria = \"Excelente\"\n",
+        "        elif exactitud >= 0.75:\n",
+        "            categoria = \"Aceptable\"\n",
+        "        elif exactitud >= 0.50:\n",
+        "            categoria = \"Requiere Ajuste\"\n",
+        "        else:\n",
+        "            categoria = \"Crítico / No apto\"\n",
+        "\n",
+        "        print(f\"\\nExactitud registrada: {exactitud}\")\n",
+        "        print(f\"Categoría del modelo: {categoria}\")\n",
+        "\n",
+        "        return categoria\n",
+        "\n",
+        "    except ValueError:\n",
+        "        print(\"Error: Por favor, introduce un valor numérico válido (ej. 0.85).\")\n",
+        "\n",
+        "evaluar_modelo()"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Ejercicio 2: Procesamiento de Hiperparametros y Lotes\n",
+        "\n",
+        "Usa una tupla para guardar la configuración fija de una capa neuronal (para evitar que se modifique por accidente y falle la red) y usa listas mutables para probar distintas tasas de aprendizaje, duplicándolas para comparar resultados sin dañar los datos originales."
+      ],
+      "metadata": {
+        "id": "N5rLccxUHwYv"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "POz200C8G9fQ"
+      },
+      "outputs": [],
+      "source": [
+        "\n",
+        "CONFIGURACION_BASE = (512, 10)\n",
+        "\n",
+        "def procesar_tasas_aprendizaje(tasas_lr):\n",
+        "    \"\"\"\n",
+        "    Recibe una lista de tasas de aprendizaje, las escala mediante un operador\n",
+        "    aritmético y retorna la nueva lista junto con la configuración base.\n",
+        "    \"\"\"\n",
+        "    factor_escala = 2.0\n",
+        "    tasas_escaladas = []\n",
+        "\n",
+        "    for tasa in tasas_lr:\n",
+        "        tasa_modificada = tasa * factor_escala\n",
+        "        tasas_escaladas.append(tasa_modificada)\n",
+        "\n",
+        "    print(\"--- REPORTE DE HIPERPARÁMETROS ---\")\n",
+        "    print(f\"Configuración Base (Tupla inmutable): {CONFIGURACION_BASE}\")\n",
+        "    print(f\"Tasas de aprendizaje originales: {tasas_lr}\")\n",
+        "    print(f\"Tasas de aprendizaje escaladas (x{factor_escala}): {tasas_escaladas}\")\n",
+        "\n",
+        "    return tasas_escaladas, CONFIGURACION_BASE\n",
+        "-\n",
+        "tasas_ejemplo = [0.1, 0.01, 0.001, 0.0001]\n",
+        "procesar_tasas_aprendizaje(tasas_ejemplo)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Ejercicio 3: Simulador de Convergencia por epocas\n",
+        "\n",
+        "Usa un ciclo for para avanzar paso a paso simulando que el error disminuye con el tiempo. Si se acaban las épocas y no llega a la precisión esperada, avisa que el entrenamiento terminó sin la meta deseada."
+      ],
+      "metadata": {
+        "id": "nX-pmKQ5IBpT"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "KGf0-j7bJDSn",
+        "outputId": "a37dfc9d-ffc5-4395-d4ec-abc0e177e5b0"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Ingresa el número máximo de épocas a simular: 4\n",
+            "Época 1/4 - Pérdida: 1.0000\n",
+            "Época 2/4 - Pérdida: 0.3536\n",
+            "Época 3/4 - Pérdida: 0.1925\n",
+            "Época 4/4 - Pérdida: 0.1250\n",
+            "\n",
+            "El entrenamiento terminó las 4 épocas sin alcanzar el umbral de 0.05.\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "0.125"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 2
+        }
+      ],
+      "source": [
+        "def simular_entrenamiento():\n",
+        "    max_epocas = int(input(\"Ingresa el número máximo de épocas a simular: \"))\n",
+        "\n",
+        "    umbral = 0.05          # Tolerancia para el criterio de parada\n",
+        "    perdida = 1.0          # Pérdida inicial\n",
+        "    convergio = False\n",
+        "\n",
+        "    for epoca in range(1, max_epocas + 1):\n",
+        "        perdida = 1.0 / (epoca ** 1.5)\n",
+        "\n",
+        "        print(f\"Época {epoca}/{max_epocas} - Pérdida: {perdida:.4f}\")\n",
+        "\n",
+        "        if perdida < umbral:\n",
+        "            print(f\"\\nEl modelo convergió anticipadamente en la época {epoca} (pérdida < {umbral}).\")\n",
+        "            convergio = True\n",
+        "            break\n",
+        "\n",
+        "    if not convergio:\n",
+        "        print(f\"\\nEl entrenamiento terminó las {max_epocas} épocas sin alcanzar el umbral de {umbral}.\")\n",
+        "\n",
+        "    return perdida\n",
+        "\n",
+        "\n",
+        "simular_entrenamiento()\n"
+      ]
+    }
+  ]
+}
